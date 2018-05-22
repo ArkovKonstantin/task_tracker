@@ -37,8 +37,12 @@ class TaskTracker:
     def complete(self, id_task):
         c = self.db_connection.cursor()
         c.execute("UPDATE tasks SET status = %s WHERE id = %s;", (3, id_task))
+        c.execute("SELECT id FROM tasks WHERE id_parent = %s;", (id_task,))
+        entries = c.fetchall()
         self.db_connection.commit()
         c.close()
+        for task_id in entries:
+            self.complete(task_id)
 
     def get_status(self, id_task):
         c = self.db_connection.cursor()
